@@ -6,9 +6,11 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
+        RazorPagesPizzaUser user = await UserManager.GetUserAsync(User);
+        var fullName = $"{user.FirstName} {user.LastName}";
         <li class="nav-item">
             <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index"
-                title="Manage">@UserManager.GetUserName(User)!</a>
+                title="Manage">Hello @fullName</a>
         </li>
         <li class="nav-item">
             <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
