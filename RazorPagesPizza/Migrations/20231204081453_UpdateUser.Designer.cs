@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RazorPagesPizza.Areas.Identity.Data;
 
@@ -11,9 +12,10 @@ using RazorPagesPizza.Areas.Identity.Data;
 namespace RazorPagesPizza.Migrations
 {
     [DbContext(typeof(RazorPagesPizzaAuth))]
-    partial class RazorPagesPizzaAuthModelSnapshot : ModelSnapshot
+    [Migration("20231204081453_UpdateUser")]
+    partial class UpdateUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
