@@ -20,12 +20,15 @@ namespace RazorPagesPizza.Areas.Identity.Pages.Account
     public class ConfirmEmailModel : PageModel
     {
         private readonly UserManager<RazorPagesPizzaUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration Configuration;
 
         public ConfirmEmailModel(UserManager<RazorPagesPizzaUser> userManager,
+                                    RoleManager<IdentityRole> roleManager,
                                     IConfiguration configuration)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             Configuration = configuration;
         }
 
@@ -56,10 +59,27 @@ namespace RazorPagesPizza.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 var isAdmin = adminEmails.Any(adminEmail => string.Compare(user.Email, adminEmail, true) == 0 ? true : false);
+
+                if (isAdmin)
+                {
+                    await CheckRoleAsync("Admin");
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                }
+
                 await _userManager.AddClaimAsync(user,
                     new Claim("IsAdmin", isAdmin.ToString()));
             }
             return Page();
         }
+
+        // check existing role, otherwise create specified role
+        private async Task CheckRoleAsync(string roleName)
+        {
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
+
     }
 }

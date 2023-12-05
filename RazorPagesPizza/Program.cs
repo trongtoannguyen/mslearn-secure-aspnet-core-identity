@@ -10,7 +10,9 @@ var connectionString = builder.Configuration.GetConnectionString("RazorPagesPizz
 
 builder.Services.AddDefaultIdentity<RazorPagesPizzaUser>(options =>
     options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<RazorPagesPizzaAuth>();
+
 // Add services to the container.
 builder.Services.AddRazorPages(options =>
 options.Conventions.AuthorizePage("/AdminsOnly", "Admin"));
