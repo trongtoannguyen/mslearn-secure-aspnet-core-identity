@@ -3,7 +3,9 @@
 #nullable disable
 
 using System;
+using System.Configuration;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -18,10 +20,13 @@ namespace RazorPagesPizza.Areas.Identity.Pages.Account
     public class ConfirmEmailModel : PageModel
     {
         private readonly UserManager<RazorPagesPizzaUser> _userManager;
+        private readonly IConfiguration Configuration;
 
-        public ConfirmEmailModel(UserManager<RazorPagesPizzaUser> userManager)
+        public ConfirmEmailModel(UserManager<RazorPagesPizzaUser> userManager,
+                                    IConfiguration configuration)
         {
             _userManager = userManager;
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -46,6 +51,14 @@ namespace RazorPagesPizza.Areas.Identity.Pages.Account
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
             StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+
+            var adminEmails = Configuration.GetSection("AdminEmail").Get<string[]>();
+            if (result.Succeeded)
+            {
+                var isAdmin = adminEmails.Any(adminEmail => string.Compare(user.Email, adminEmail, true) == 0 ? true : false);
+                await _userManager.AddClaimAsync(user,
+                    new Claim("IsAdmin", isAdmin.ToString()));
+            }
             return Page();
         }
     }
